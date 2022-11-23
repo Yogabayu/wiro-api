@@ -39,49 +39,55 @@ class UserController extends Controller
 
     public function register(Request $request) 
     {
-        $validator = Validator::make($request->all(), [
-            'name'     => 'required',
-            'email'    => 'required|email|unique:users',
-            'password' => 'required|min:8',
-            'nik' => 'required',
-            'photo' => 'required',
-            'role' => 'required',
-            'address' => 'required',
-            'contact' => 'required',
-        ]);
-
-        if ($validator->fails()) return sendError('Validation Error.', $validator->errors(), 401);
-
-        try {
-            if ($request->hasFile('photo')) {
-                $photoEXT       = $request->file('photo')->getClientOriginalName();
-                $filename       = pathinfo($photoEXT, PATHINFO_FILENAME);
-                $EXT            = $request->file('photo')->getClientOriginalExtension();
-                $filePhoto      = $filename. '_'.time().'.' .$EXT;
-                $path           = $request->file('photo')->move(public_path('file/admin/user/image/'), $filePhoto);
-            }else {
-                $filePhoto = 'null';
-            }      
-            $user = User::create([
-                'name'      => $request->name,
-                'email'     => $request->email,
-                'password'  => bcrypt($request->password),
-                'nik'       => $request->nik,
-                'photo'     => $filePhoto,
-                'role'      => $request->role,
-                'address'    => $request->address,
-                'contact'    => $request->contact,
+        if ($request->role == 1) {
+            $validator = Validator::make($request->all(), [
+                'name'     => 'required',
+                'email'    => 'required|email|unique:users',
+                'password' => 'required|min:8',
+                'nik' => 'required',
+                'photo' => 'required',
+                'role' => 'required',
+                'address' => 'required',
+                'contact' => 'required',
             ]);
-
-            $success['name']  = $user;
-            $message          = 'User create successfully';
-            $success['token'] = $user->createToken('accessToken')->accessToken;
-        } catch (Exception $e) {
+    
+            if ($validator->fails()) return sendError('Validation Error.', $validator->errors(), 401);
+    
+            try {
+                if ($request->hasFile('photo')) {
+                    $photoEXT       = $request->file('photo')->getClientOriginalName();
+                    $filename       = pathinfo($photoEXT, PATHINFO_FILENAME);
+                    $EXT            = $request->file('photo')->getClientOriginalExtension();
+                    $filePhoto      = $filename. '_'.time().'.' .$EXT;
+                    $path           = $request->file('photo')->move(public_path('file/admin/user/image/'), $filePhoto);
+                }else {
+                    $filePhoto = 'null';
+                }      
+                $user = User::create([
+                    'name'      => $request->name,
+                    'email'     => $request->email,
+                    'password'  => bcrypt($request->password),
+                    'nik'       => $request->nik,
+                    'photo'     => $filePhoto,
+                    'role'      => $request->role,
+                    'address'    => $request->address,
+                    'contact'    => $request->contact,
+                ]);
+    
+                $success['name']  = $user;
+                $message          = 'User create successfully';
+                $success['token'] = $user->createToken('accessToken')->accessToken;
+            } catch (Exception $e) {
+                $success['token'] = [];
+                $message          = 'Oops! Unable to create a new user.';
+            }
+    
+            return sendResponse($success, $message);
+        } else {
             $success['token'] = [];
             $message          = 'Oops! Unable to create a new user.';
+            return sendResponse($success, $message);
         }
-
-        return sendResponse($success, $message);
     }
 
     public function showAdmin($id)
@@ -100,7 +106,6 @@ class UserController extends Controller
     }
     public function update(Request $request,$id)
     {
-        
         try {
             if ($request->hasFile('photo')) {
                 $validator = Validator::make($request->all(), [

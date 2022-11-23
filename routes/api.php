@@ -41,8 +41,11 @@ Route::prefix('admin')->group(function () {
 
 Route::prefix('user')->group(function () {
     Route::post('login', [UserController::class, 'login']);
+    Route::post('register', [UserController::class, 'register']);
 
     Route::middleware('auth:api')->group(function () {
-        Route::get('index', [UserController::class,'index']);
+        //acount
+        Route::resource('account',UserController::class);
+        Route::get('detail/{id}',[UserController::class,'detail']);
     });
 });
