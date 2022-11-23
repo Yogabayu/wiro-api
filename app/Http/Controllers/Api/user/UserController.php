@@ -245,4 +245,16 @@ class UserController extends Controller
             return sendError('Unauthorised', ['error' => 'Unauthorised'], 401);
         }
     }
+
+    public function logout()
+    {
+        if (Auth::check()) {
+            $token = Auth::user()->token();
+            $token->revoke();
+            return sendResponse('sukses', 'User is logout');
+        } 
+        else{ 
+            return sendError('Unauthorised.', ['error'=>'Unauthorised'] , Response::HTTP_UNAUTHORIZED);
+        } 
+    }
 }
