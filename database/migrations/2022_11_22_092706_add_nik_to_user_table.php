@@ -14,10 +14,11 @@ class AddNikToUserTable extends Migration
     public function up()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->string('alamat')->nullable()->after('password');
-            $table->integer('nik')->nullable()->after('alamat');
+            $table->string('address')->nullable()->after('password');
+            $table->bigInteger('nik')->nullable()->after('address');
             $table->string('photo')->nullable()->after('nik');
             $table->integer('role')->nullable()->after('photo');
+            $table->string('contact')->nullable()->after('role');
         });
     }
 

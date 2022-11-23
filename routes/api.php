@@ -1,5 +1,8 @@
 <?php
 
+use App\Http\Controllers\Api\admin\CategoriesController;
+use App\Http\Controllers\Api\admin\CommentController;
+use App\Http\Controllers\Api\admin\TourController;
 use App\Http\Controllers\Api\admin\UserController as AdminController;
 use App\Http\Controllers\Api\user\UserController;
 use Illuminate\Http\Request;
@@ -22,13 +25,22 @@ Route::prefix('admin')->group(function () {
     Route::post('register', [AdminController::class, 'register']);
 
     Route::middleware('auth:api')->group(function () {
-        Route::resource('posts', AdminController::class);
+        //user
+        Route::get('showadmin/{id}',[AdminController::class,'showAdmin']);
+        Route::put('updateAdmin/{id}',[AdminController::class,'update']);
+        Route::delete('delete/{id}',[AdminController::class,'destroy']);
+
+        //categories
+        Route::resource('categories', CategoriesController::class);
+        //Tour
+        Route::resource('tour', TourController::class);
+        //Comment
+        Route::resource('comment',CommentController::class);
     });
 });
 
 Route::prefix('user')->group(function () {
     Route::post('login', [UserController::class, 'login']);
-    // Route::post('register', [LoginController::class, 'register']);
 
     Route::middleware('auth:api')->group(function () {
         Route::get('index', [UserController::class,'index']);

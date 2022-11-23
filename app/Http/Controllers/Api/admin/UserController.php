@@ -3,7 +3,10 @@
 namespace App\Http\Controllers\Api\admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
@@ -14,7 +17,6 @@ class UserController extends Controller
      */
     public function login(Request $request) 
     {
-        dd('masuk login admin');
         $validator = Validator::make($request->all(), [
             'email'    => 'required|email',
             'password' => 'required'
@@ -26,7 +28,7 @@ class UserController extends Controller
 
         if (Auth::attempt($credentials)) {
             $user             = Auth::user();
-            $success['name']  = $user->name;
+            $success['name']  = $user;
             $success['token'] = $user->createToken('accessToken')->accessToken;
 
             return sendResponse($success, 'You are successfully logged in.');
@@ -35,75 +37,132 @@ class UserController extends Controller
         }
     }
 
-
-    public function index()
+    public function register(Request $request) 
     {
-        //
+        $validator = Validator::make($request->all(), [
+            'name'     => 'required',
+            'email'    => 'required|email|unique:users',
+            'password' => 'required|min:8',
+            'nik' => 'required',
+            'photo' => 'required',
+            'role' => 'required',
+            'address' => 'required',
+            'contact' => 'required',
+        ]);
+
+        if ($validator->fails()) return sendError('Validation Error.', $validator->errors(), 401);
+
+        try {
+            if ($request->hasFile('photo')) {
+                $photoEXT       = $request->file('photo')->getClientOriginalName();
+                $filename       = pathinfo($photoEXT, PATHINFO_FILENAME);
+                $EXT            = $request->file('photo')->getClientOriginalExtension();
+                $filePhoto      = $filename. '_'.time().'.' .$EXT;
+                $path           = $request->file('photo')->move(public_path('file/admin/user/image/'), $filePhoto);
+            }else {
+                $filePhoto = 'null';
+            }      
+            $user = User::create([
+                'name'      => $request->name,
+                'email'     => $request->email,
+                'password'  => bcrypt($request->password),
+                'nik'       => $request->nik,
+                'photo'     => $filePhoto,
+                'role'      => $request->role,
+                'address'    => $request->address,
+                'contact'    => $request->contact,
+            ]);
+
+            $success['name']  = $user;
+            $message          = 'User create successfully';
+            $success['token'] = $user->createToken('accessToken')->accessToken;
+        } catch (Exception $e) {
+            $success['token'] = [];
+            $message          = 'Oops! Unable to create a new user.';
+        }
+
+        return sendResponse($success, $message);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
+    public function showAdmin($id)
     {
-        //
+        try {
+            $check=User::where('id',$id)->count();
+            if ($check!=0) {
+                $data=User::find($id);
+                return sendResponse($data,"success get data");
+            } else {
+                return sendError('not found','error get data');
+            }
+        } catch (\Exception $e) {
+            return sendError($e,'error get data');
+        }  
+    }
+    public function update(Request $request,$id)
+    {
+        
+        try {
+            if ($request->hasFile('photo')) {
+                $validator = Validator::make($request->all(), [
+                    'name'     => 'required',
+                    'email'    => 'required|email|unique:users',
+                    'password' => 'required|min:8',
+                    'nik' => 'required',
+                    'photo' => 'required',
+                    'role' => 'required',
+                    'address' => 'required',
+                    'contact' => 'required',
+                ]);
+        
+                if ($validator->fails()) return sendError('Validation Error.', $validator->errors(), 401);
+                
+                if ($request->hasFile('photo')) {
+                    $photoEXT       = $request->file('photo')->getClientOriginalName();
+                    $filename       = pathinfo($photoEXT, PATHINFO_FILENAME);
+                    $EXT            = $request->file('photo')->getClientOriginalExtension();
+                    $filePhoto      = $filename. '_'.time().'.' .$EXT;
+                    $path           = $request->file('photo')->move(public_path('file/admin/user/image/'), $filePhoto);
+                }
+                $data = User::findOrfail($id)->update([
+                        'name'      => $request->name,
+                        'email'     => $request->email,
+                        'password'  => bcrypt($request->password),
+                        'nik'       => $request->nik,
+                        'photo'     => $filePhoto,
+                        'role'      => $request->role,
+                        'address'    => $request->address,
+                        'contact'    => $request->contact,
+                ]);
+                return sendResponse($data,'success update');
+            } else {
+                $data = User::findOrfail($id)->update([
+                        'name'      => $request->name,
+                        'email'     => $request->email,
+                        'password'  => bcrypt($request->password),
+                        'nik'       => $request->nik,
+                        'role'      => $request->role,
+                        'address'    => $request->address,
+                        'contact'    => $request->contact,
+                ]);
+                return sendResponse($data,'success update');
+            }
+        } catch (\Throwable $th) {
+            return sendError('error','error');
+        }
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function destroy($id)
     {
-        //
+        try {
+            $data = User::destroy($id);
+            if ($data==0) {                
+                return sendError("User not found","error");
+            } else {
+                return sendResponse('Success Delete User','success');
+            }                       
+        } catch (\Exception $exception) {
+            return sendError("User not found","error");
+        }
     }
+    
 }
