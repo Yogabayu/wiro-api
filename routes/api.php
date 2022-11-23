@@ -4,6 +4,7 @@ use App\Http\Controllers\Api\admin\CategoriesController;
 use App\Http\Controllers\Api\admin\CommentController;
 use App\Http\Controllers\Api\admin\TourController;
 use App\Http\Controllers\Api\admin\UserController as AdminController;
+use App\Http\Controllers\Api\user\SearchController;
 use App\Http\Controllers\Api\user\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -47,5 +48,8 @@ Route::prefix('user')->group(function () {
         //acount
         Route::resource('account',UserController::class);
         Route::get('detail/{id}',[UserController::class,'detail']);
+
+        //search
+        Route::post('search',[SearchController::class,'search']);
     });
 });

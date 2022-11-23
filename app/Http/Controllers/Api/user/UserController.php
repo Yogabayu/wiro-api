@@ -234,7 +234,7 @@ class UserController extends Controller
             $comment = DB::table('comments')
                         ->join('tours','tours.id','=','comments.tour_id')
                         ->where('comments.user_id',$id)
-                        ->select('comments.*','tours.name')
+                        ->select('comments.*','tours.name as place')
                         ->get();
             $userDetail = User::find($id);
             $success['comment']  = $comment;
