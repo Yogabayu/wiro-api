@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\admin\CommentController;
 use App\Http\Controllers\Api\admin\TourController;
 use App\Http\Controllers\Api\admin\UserController as AdminController;
 use App\Http\Controllers\Api\user\SearchController;
+use App\Http\Controllers\Api\user\TourController as UserTourController;
 use App\Http\Controllers\Api\user\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -51,5 +52,9 @@ Route::prefix('user')->group(function () {
 
         //search
         Route::post('search',[SearchController::class,'search']);
+
+        //index
+        Route::resource('index',UserTourController::class);
+        Route::get('tourdetail/{id}',[UserTourController::class,'detail']);
     });
 });

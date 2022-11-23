@@ -3,33 +3,37 @@
 namespace App\Http\Controllers\Api\user;
 
 use App\Http\Controllers\Controller;
+use App\Models\Comment;
 use App\Models\Tour;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
-class SearchController extends Controller
+class TourController extends Controller
 {
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-
-    public function search(Request $request)
+    public function index()
     {
         try {
-            $data = DB::table('tours')
-                ->where('name','LIKE','%'.$request->search.'%')
-                ->get();
+            $data = Tour::all();            
             return sendResponse($data, 'You are successfully get data.');
-        } catch (\Throwable $th) {            
+        } catch (\Throwable $th) {
             return sendError('Unauthorised', ['error' => 'Unauthorised'], 401);
         }
     }
 
-    public function index()
+    public function detail($id)
     {
-        
+        try {
+            $response['tourdetail'] = Tour::find($id);
+            $response['comments'] = DB::table('comments')->where('tour_id',$id)->get();
+            return sendResponse($response, 'You are successfully get data.');            
+        } catch (\Throwable $th) {
+            return sendError('Unauthorised', ['error' => 'Unauthorised'], 401);
+        }
     }
 
     /**
