@@ -29,7 +29,7 @@ class TourController extends Controller
     {
         try {
             $response['tourdetail'] = Tour::find($id);
-            $response['comments'] = DB::table('comments')->where('tour_id',$id)->get();
+            $response['comments'] = DB::table('comments')->where('tour_id',$id)->orderBy('date','ASC')->get();
             return sendResponse($response, 'You are successfully get data.');            
         } catch (\Throwable $th) {
             return sendError('Unauthorised', ['error' => 'Unauthorised'], 401);
