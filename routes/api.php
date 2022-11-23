@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\admin\CategoriesController;
 use App\Http\Controllers\Api\admin\CommentController;
+use App\Http\Controllers\Api\admin\DashboardController;
 use App\Http\Controllers\Api\admin\TourController;
 use App\Http\Controllers\Api\admin\UserController as AdminController;
 use App\Http\Controllers\Api\user\SearchController;
@@ -40,6 +41,8 @@ Route::prefix('admin')->group(function () {
         Route::resource('tour', TourController::class);
         //Comment
         Route::resource('comment',CommentController::class);
+        //dashboard
+        Route::resource('dashboard',DashboardController::class);
     });
 });
 
