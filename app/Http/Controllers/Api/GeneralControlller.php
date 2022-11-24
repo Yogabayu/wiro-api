@@ -31,14 +31,10 @@ class GeneralControlller extends Controller
     public function detailtour($id)
     {
         try {
-            try {
                 $response['tourdetail'] = Tour::find($id);
                 $response['comments'] = DB::table('comments')->where('tour_id',$id)->orderBy('date','ASC')->get();
                
                 return sendResponse($response, 'You are successfully get data.');            
-            } catch (\Exception $th) {
-                return sendError('Unauthorised', ['error' => $th->getMessage()], 401);
-            }
         } catch (\Exception $th) {
             return sendError('Unauthorised', ['error' => $th->getMessage()], 401);
         }
