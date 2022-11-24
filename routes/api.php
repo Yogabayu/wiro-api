@@ -5,6 +5,7 @@ use App\Http\Controllers\Api\admin\CommentController;
 use App\Http\Controllers\Api\admin\DashboardController;
 use App\Http\Controllers\Api\admin\TourController;
 use App\Http\Controllers\Api\admin\UserController as AdminController;
+use App\Http\Controllers\Api\GeneralControlller;
 use App\Http\Controllers\Api\user\SearchController;
 use App\Http\Controllers\Api\user\TourController as UserTourController;
 use App\Http\Controllers\Api\user\UserCommentController;
@@ -22,7 +23,8 @@ use Illuminate\Support\Facades\Route;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-
+Route::resource('general',GeneralControlller::class);
+Route::get('detail/{id}',[GeneralControlller::class,'detailtour']);
 
 Route::prefix('admin')->group(function () {
     Route::post('login', [AdminController::class, 'login']);
