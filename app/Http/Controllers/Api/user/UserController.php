@@ -53,36 +53,42 @@ class UserController extends Controller
             ]);
     
             if ($validator->fails()) return sendError('Validation Error.', $validator->errors(), 401);
-    
-            try {
-                if ($request->hasFile('photo')) {
-                    $photoEXT       = $request->file('photo')->getClientOriginalName();
-                    $filename       = pathinfo($photoEXT, PATHINFO_FILENAME);
-                    $EXT            = $request->file('photo')->getClientOriginalExtension();
-                    $filePhoto      = $filename. '_'.time().'.' .$EXT;
-                    $path           = $request->file('photo')->move(public_path('file/admin/user/image/'), $filePhoto);
-                }else {
-                    $filePhoto = 'null';
-                }      
-                $user = User::create([
-                    'name'      => $request->name,
-                    'email'     => $request->email,
-                    'password'  => bcrypt($request->password),
-                    'nik'       => $request->nik,
-                    'photo'     => $filePhoto,
-                    'role'      => $request->role,
-                    'address'    => $request->address,
-                    'contact'    => $request->contact,
-                ]);
-    
-                $success['name']  = $user;
-                $message          = 'User create successfully';
-                $success['token'] = $user->createToken('accessToken')->accessToken;
-            } catch (Exception $e) {
+            
+            $check = DB::table('users')->where('email',$request->email)->count();
+            if ($check != 0) {
                 $success['token'] = [];
-                $message          = 'Oops! Unable to create a new user.';
-            }
-    
+                $message          = 'Oops! Unable to create a new user. 22';
+                return sendResponse($success, $message);
+            } else {
+                try {
+                    if ($request->hasFile('photo')) {
+                        $photoEXT       = $request->file('photo')->getClientOriginalName();
+                        $filename       = pathinfo($photoEXT, PATHINFO_FILENAME);
+                        $EXT            = $request->file('photo')->getClientOriginalExtension();
+                        $filePhoto      = $filename. '_'.time().'.' .$EXT;
+                        $path           = $request->file('photo')->move(public_path('file/user/user/image/'), $filePhoto);
+                    }else {
+                        $filePhoto = 'null';
+                    }      
+                    $user = User::create([
+                        'name'      => $request->name,
+                        'email'     => $request->email,
+                        'password'  => bcrypt($request->password),
+                        'nik'       => $request->nik,
+                        'photo'     => $filePhoto,
+                        'role'      => $request->role,
+                        'address'    => $request->address,
+                        'contact'    => $request->contact,
+                    ]);
+        
+                    $success['name']  = $user;
+                    $message          = 'User create successfully';
+                    $success['token'] = $user->createToken('accessToken')->accessToken;
+                } catch (Exception $e) {
+                    $success['token'] = [];
+                    $message          = 'Oops! Unable to create a new user.';
+                }
+            }      
             return sendResponse($success, $message);
         } else {
             $success['token'] = [];
