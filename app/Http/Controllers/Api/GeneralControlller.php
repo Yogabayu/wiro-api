@@ -36,11 +36,11 @@ class GeneralControlller extends Controller
                 $response['comments'] = DB::table('comments')->where('tour_id',$id)->orderBy('date','ASC')->get();
                
                 return sendResponse($response, 'You are successfully get data.');            
-            } catch (\Throwable $th) {
-                return sendError('Unauthorised', ['error' => 'Unauthorised'], 401);
+            } catch (\Exception $th) {
+                return sendError('Unauthorised', ['error' => $th->getMessage()], 401);
             }
-        } catch (\Throwable $th) {
-            return sendError('Unauthorised', ['error' => 'Unauthorised'], 401);
+        } catch (\Exception $th) {
+            return sendError('Unauthorised', ['error' => $th->getMessage()], 401);
         }
     }
 
