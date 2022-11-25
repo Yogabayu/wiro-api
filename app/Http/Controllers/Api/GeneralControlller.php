@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Category;
+use App\Models\Event;
 use App\Models\Tour;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -37,6 +38,28 @@ class GeneralControlller extends Controller
                 return sendResponse($response, 'You are successfully get data.');            
         } catch (\Exception $th) {
             return sendError('Unauthorised', ['error' => $th->getMessage()], 401);
+        }
+    }
+
+    public function event()
+    {
+        try {
+            $data = Event::all();
+            return sendResponse($data,'success get data');
+        } catch (\Throwable $th) {
+            return sendError($th->getMessage(),'unknow error');
+        }
+    }
+
+    public function detailevent($id)
+    {
+        try {
+            $success['event']   = Event::find($id);
+            $success['comment'] = DB::table('event_comments')->where('event_id',$id)->get();
+    
+            return sendResponse($success,'successful retrive data from server');
+        } catch (\Throwable $th) {
+            return sendError($th->getMessage(),'unknow error');
         }
     }
 

@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\admin\EventController;
 use App\Http\Controllers\Api\admin\TourController;
 use App\Http\Controllers\Api\admin\UserController as AdminController;
 use App\Http\Controllers\Api\GeneralControlller;
+use App\Http\Controllers\Api\user\EventController as UserEventController;
 use App\Http\Controllers\Api\user\SearchController;
 use App\Http\Controllers\Api\user\TourController as UserTourController;
 use App\Http\Controllers\Api\user\UserCommentController;
@@ -24,8 +25,13 @@ use Illuminate\Support\Facades\Route;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
+//tour
 Route::resource('general',GeneralControlller::class);
 Route::get('detail/{id}',[GeneralControlller::class,'detailtour']);
+//event
+Route::get('event',[GeneralControlller::class,'event']);
+Route::get('eventdetail/{id}',[GeneralControlller::class,'detailevent']);
+
 
 Route::prefix('admin')->group(function () {
     Route::post('login', [AdminController::class, 'login']);
@@ -53,7 +59,7 @@ Route::prefix('admin')->group(function () {
         Route::resource('event',EventController::class);
         Route::post('addcom',[EventController::class,'addcomment']);
         Route::put('updatecom/{id}',[EventController::class,'updatecomment']);
-        Route::destroy('deletecom/{id}',[EventController::class,'deletecomment']);
+        Route::delete('deletecom/{id}',[EventController::class,'deletecomment']);
     });
 });
 
@@ -76,5 +82,9 @@ Route::prefix('user')->group(function () {
 
         //comment
         Route::resource('comment',UserCommentController::class);
+
+        //event
+        Route::resource('event', UserEventController::class);
+        Route::get('eventdet/{id}',[UserEventController::class,'detailevent']);
     });
 });
