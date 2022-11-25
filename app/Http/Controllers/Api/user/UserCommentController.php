@@ -99,7 +99,36 @@ class UserCommentController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        try {
+            $user =auth()->user();
+            $validator = Validator::make($request->all(), [
+                'tour_id'   => 'required',
+                'date'      => 'required',
+                'desc'      => 'required',
+            ]);
+
+            if ($validator->fails()) return sendError('Validation Error.', $validator->errors(), 401);
+
+            try {
+                $com = Comment::FindOrFail($id)->update([
+                    'tour_id'       => $request->tour_id,
+                    'user_id'       => $user->id,
+                    'date'          => $request->date,
+                    'desc'          => $request->desc,
+                ]);
+        
+                return response()->json([
+                    'message' => 'success update data',
+                    'data' => $com,
+                ],200);
+            } catch (\Exception $th) {
+                return response()->json([
+                    'message' => 'error'
+                ],400);
+            }
+        } catch (\Exception $th) {
+            return sendError('error',$th);
+        }
     }
 
     /**
@@ -110,6 +139,15 @@ class UserCommentController extends Controller
      */
     public function destroy($id)
     {
-        //
+        try {
+            $data = Comment::destroy($id);
+            if ($data==0) {                
+                return sendError("comment not found","error");
+            } else {
+                return sendResponse('Success Delete comment','success');
+            }                       
+        } catch (\Exception $exception) {
+            return sendError("User not found","error");
+        }
     }
 }
