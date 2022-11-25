@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\admin\CategoriesController;
 use App\Http\Controllers\Api\admin\CommentController;
 use App\Http\Controllers\Api\admin\DashboardController;
+use App\Http\Controllers\Api\admin\EventController;
 use App\Http\Controllers\Api\admin\TourController;
 use App\Http\Controllers\Api\admin\UserController as AdminController;
 use App\Http\Controllers\Api\GeneralControlller;
@@ -28,9 +29,11 @@ Route::get('detail/{id}',[GeneralControlller::class,'detailtour']);
 
 Route::prefix('admin')->group(function () {
     Route::post('login', [AdminController::class, 'login']);
-    Route::post('register', [AdminController::class, 'register']);
-
+    
     Route::middleware('auth:api')->group(function () {
+        //register
+        Route::post('register', [AdminController::class, 'register']);
+
         //user
         Route::get('showadmin/{id}',[AdminController::class,'showAdmin']);
         Route::put('updateAdmin/{id}',[AdminController::class,'update']);
@@ -45,6 +48,10 @@ Route::prefix('admin')->group(function () {
         Route::resource('comment',CommentController::class);
         //dashboard
         Route::resource('dashboard',DashboardController::class);
+
+        //event
+        Route::resource('event',EventController::class);
+        Route::post('addcom',[EventController::class,'addcomment']);
     });
 });
 

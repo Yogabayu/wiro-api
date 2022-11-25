@@ -44,7 +44,7 @@ class TourController extends Controller
     public function store(Request $request)
     {
         $user =auth()->user();
-        // dd($user->id);
+        // dd($user->role);
         $validator = Validator::make($request->all(), [
             'category_id'   => 'required',
             'name'          => 'required',

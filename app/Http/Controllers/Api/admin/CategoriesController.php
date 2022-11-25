@@ -22,8 +22,8 @@ class CategoriesController extends Controller
              'message' => 'success get data',
              'data' =>  $datas,
             ], 200);
-        } catch (Exception $e) {            
-            return response()->json("Eror", 400);
+        } catch (\Throwable $th) {
+            return sendError($th->getMessage(),'could not get data');
         }
     }
 
@@ -60,10 +60,8 @@ class CategoriesController extends Controller
                 'message' => 'success input data',
                 'data' => $cat,
             ],200);
-        } catch (\Exception $th) {
-            return response()->json([
-                'message' => 'error'
-            ],400);
+        } catch (\Throwable $th) {
+            return sendError($th->getMessage(),'could not store data');
         }
     }
 
