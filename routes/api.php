@@ -52,6 +52,8 @@ Route::prefix('admin')->group(function () {
         //event
         Route::resource('event',EventController::class);
         Route::post('addcom',[EventController::class,'addcomment']);
+        Route::put('updatecom/{id}',[EventController::class,'updatecomment']);
+        Route::destroy('deletecom/{id}',[EventController::class,'deletecomment']);
     });
 });
 

@@ -236,6 +236,45 @@ class EventController extends Controller
         }
     }
 
+    public function updatecomment(Request $request, $id)
+    {
+        try {
+            $user = auth()->user();
+            $validator = Validator::make($request->all(), [
+                'event_id' => 'required',
+                'date'     => 'required',
+                'desc'     => 'required',
+            ]);
+            
+            if ($validator->fails()) return sendError('Validation Error.', $validator->errors(), 401);
+            $comm = EventComment::FindOrFail($id)->update([
+                'user_id'   => $user->id,
+                'event_id'  => $request->event_id,
+                'date'      => $request->date,
+                'desc'      => $request->desc,
+            ]);
 
+            return sendResponse(
+                $comm,'Succesfully updated data'
+            );
+
+        } catch (\Throwable $th) {
+            return sendError($th->getMessage(),'error updated comment');
+        }
+    }
+
+    public function deletecomment($id)
+    {
+        try {
+            $data = EventComment::destroy($id);
+            if ($data==0) {                
+                return sendError("Comment not found","error");
+            } else {
+                return sendResponse('Success Delete Comment','success');
+            }  
+        } catch (\Throwable $th) {
+            return sendError($th->getMessage(),'Eror delete data from database');
+        }
+    }
     //end comment
 }
